@@ -132,6 +132,13 @@ class _MarkdownPageState extends State<MarkdownPage> {
         controller: controller,
         styleConfig: StyleConfig(
             pConfig: PConfig(
+                custom: (node) {
+                  print('***');
+                  print('tag = ${node.tag}');
+                  print('textContent = ${node.textContent}');
+                  print('attributes = ${node.attributes}');
+                  return Text(node.textContent);
+                },
                 linkGesture: (linkChild, url) {
                   return GestureDetector(
                     child: linkChild,

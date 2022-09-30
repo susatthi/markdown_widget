@@ -1,6 +1,7 @@
 import 'package:html/dom.dart' as h;
-import 'package:markdown/markdown.dart' as m;
 import 'package:html/parser.dart';
+import 'package:markdown/markdown.dart' as m;
+
 import '../tags/markdown_tags.dart';
 
 ///see this issue: https://github.com/dart-lang/markdown/issues/284#event-3216258013
@@ -8,7 +9,16 @@ import '../tags/markdown_tags.dart';
 void htmlToMarkdown(h.Node? node, int deep, List<m.Node> mNodes) {
   if (node == null) return;
   if (node is h.Text) {
-    mNodes.add(m.Text(node.text));
+    bool ignore = false;
+    final lastNode = mNodes.isNotEmpty ? mNodes.last : null;
+    if (lastNode is m.Element) {
+      if (lastNode.textContent == node.data) {
+        ignore = true;
+      }
+    }
+    if (!ignore) {
+      mNodes.add(m.Text(node.text));
+    }
   } else if (node is h.Element) {
     final tag = node.localName;
     if (tag == img || tag == video) {
@@ -16,7 +26,7 @@ void htmlToMarkdown(h.Node? node, int deep, List<m.Node> mNodes) {
       element.attributes.addAll(node.attributes.cast());
       mNodes.add(element);
     } else {
-      final element = m.Element(tag!, null);
+      final element = m.Element.text(tag!, node.innerHtml);
       element.attributes.addAll(node.attributes.cast());
       final customElement = m.Element(other, [element]);
       mNodes.add(customElement);

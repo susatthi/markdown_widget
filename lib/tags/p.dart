@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:markdown/markdown.dart' as m;
-import 'markdown_tags.dart';
+
 import '../config/html_support.dart';
 import '../config/style_config.dart';
+import 'markdown_tags.dart';
 
 ///Tag:  p
 ///the paragraph widget
@@ -70,7 +71,15 @@ class PWidget extends StatelessWidget {
             if (node.tag == video) return getVideoSpan(node);
             if (node.tag == a) return getLinkSpan(node);
             if (node.tag == input) return getInputSpan(node);
-            if (node.tag == other) return getOtherWidgetSpan(node);
+            if (node.tag == other) {
+              final customWidget = StyleConfig().pConfig?.custom;
+              if (customWidget != null) {
+                return getOtherWidgetSpan(node);
+              } else {
+                return buildTextSpan(m.Text(node.textContent), parentStyle,
+                    shouldParseHtml, selectable);
+              }
+            }
             return getBlockSpan(
               node.children,
               node,
